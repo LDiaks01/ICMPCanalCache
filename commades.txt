@@ -1,0 +1,69 @@
+#authorize raw packet
+sudo modprobe iptable_raw
+sudo iptables -A PREROUTING -t raw -p tcp -j ACCEPT
+
+# redirect packet to nfqueue rule
+#h1
+---les paquets en entrée
+sudo iptables -t raw -A PREROUTING -s 192.168.10.3 -p icmp -j NFQUEUE --queue-num 2
+--- les paquets sortants
+sudo iptables -t raw -A OUTPUT -d 10.87.87.1 -j NFQUEUE --queue-num 0
+
+
+#h3
+---les paquets en entrée
+sudo iptables -t raw -A PREROUTING -s 192.168.10.1 -p icmp -j NFQUEUE --queue-num 2
+----les paquets sortants
+sudo iptables -t raw -A OUTPUT -d 10.87.87.1 -j NFQUEUE --queue-num 0
+
+
+ sudo iptables -t raw -L -v -n
+
+
+sudo iptables -t raw -A OUTPUT -j NFQUEUE --queue-num 0
+sudo iptables -t raw -A OUTPUT -d 10.87.87.2 -j NFQUEUE --queue-num 0
+sudo iptables -t raw -A PREROUTING -s 192.168.10.1 -j NFQUEUE --queue-num 0
+vraie regle
+sudo iptables -t raw -A PREROUTING -s 192.168.10.1 -p icmp -j NFQUEUE --queue-num 2
+
+# if length is needed
+sudo iptables -A OUTPUT -m length --length 1000:1500 -j NFQUEUE --queue-num 0
+
+#changing  -A to -D for deletion of a single rule
+# deletion of all rules
+sudo iptables -t raw -F or sudo iptables -F
+
+#authorize raw packet
+sudo modprobe iptable_raw
+sudo iptables -A PREROUTING -t raw -p tcp -j ACCEPT
+
+#authorize the fragmentation
+sudo iptables -A INPUT -p icmp --icmp-type fragmentation-needed -j ACCEPT
+
+# suivre les comm
+watch -n 1.0 sudo ss -tu state all
+
+#MODE UPD SOCAT DES DEUX COTES
+socat UDP-LISTEN:6789,reuseaddr,fork,bind=10.87.87.2 -
+socat TCP-LISTEN:6789,reuseaddr,fork,bind=10.87.87.1 -
+
+# tcp connexions
+
+
+#flush la tables PREROUTING
+iptables -t nat -F PREROUTING
+
+#suivre les connexions
+conntrack -L
+
+socat tcp-listen:8112,fork,reuseaddr \
+  exec:'ip netns exec myvpn socat STDIO "tcp-connect:127.0.0.1:8112"',nofork
+
+voir si on peut utiliser nfqueue
+
+
+udp vraie commande 
+socat - UDP4:10.87.87.1:6789,bind=10.87.87.2:6788
+
+h3
+socat - UDP4:10.87.87.1:6789,bind=10.87.87.2:6788
