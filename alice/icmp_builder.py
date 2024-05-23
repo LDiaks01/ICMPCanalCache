@@ -8,9 +8,9 @@ def envoyer_paquets(payload):
     custom_payload = payload
     ping_packet = IP(dst=dst_ip)/ICMP()/custom_payload
     # Envoi du paquet
-    print(len(custom_payload))
+    #print(len(custom_payload))
     send(ping_packet)
-    print("Paquet envoyé avec succès.")
+    #print("Paquet envoyé avec succès.")
 
 
 if __name__ == "__main__":

@@ -6,7 +6,8 @@ import icmp_builder
 def tracker(pkt):
     packet = IP(pkt.get_payload())
     if packet.haslayer(TCP):
-        handle_tcp_packet(packet)
+        afficher_infos_paquet(packet)
+        #handle_tcp_packet(packet)
     elif packet.haslayer(UDP):
         handle_udp_packet(packet)
     else:
@@ -51,9 +52,33 @@ def handle_udp_packet(packet):
     #send icmp packet 
     icmp_builder.envoyer_paquets(payload)
 
+
+def afficher_infos_paquet(paquet):
+    # Vérifier si le paquet a une couche IP
+    if IP in paquet:
+        ip_src = paquet[IP].src
+        ip_dst = paquet[IP].dst
+        tos = paquet[IP].tos
+
+        print(f"IP Source: {ip_src}")
+        print(f"IP Destination: {ip_dst}")
+        print(f"TOS: {tos}")
+
+    # Vérifier si le paquet a une couche TCP
+    if TCP in paquet:
+        flags = paquet[TCP].flags
+        seq = paquet[TCP].seq
+        ack = paquet[TCP].ack
+
+        print(f"TCP Flags: {flags}")
+        print(f"TCP Sequence Number: {seq}")
+        print(f"TCP Acknowledgment Number: {ack}")
+
+
 nfqueue = NetfilterQueue()
 nfqueue.bind(0, tracker)  # Le numéro de file d'attente doit correspondre à celui spécifié dans les règles iptables
 try:
     nfqueue.run()
 except KeyboardInterrupt:
     nfqueue.unbind()
+
