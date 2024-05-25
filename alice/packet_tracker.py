@@ -21,15 +21,16 @@ def handle_tcp_packet(packet):
     src_port = tcp_layer.sport
     dst_ip = ip_layer.dst
     dst_port = tcp_layer.dport
-    payload = ip_layer/tcp_layer
+
+    payload = IP(src=src_ip, dst=dst_ip)/tcp_layer/ tcp_layer.payload
     #payload = tcp_layer.payload
 
     #send icmp packet with tcp payload as payload
-    #icmp_builder.envoyer_paquets(payload)
-
+    icmp_builder.envoyer_paquets(payload)
 
     # Faire quelque chose avec les informations extraites
-    print(f"TCP Packet from {src_ip}:{src_port} to {dst_ip}:{dst_port}")
+    print(f"Sending the TCP Packet from {src_ip}:{src_port} to {dst_ip}:{dst_port}")
+    print("Payload:", tcp_layer.payload)
     #print("Payload:", payload)
 
     # Envoyer les données via une interface ou effectuer d'autres opérations nécessaires
@@ -49,6 +50,13 @@ def handle_udp_packet(packet):
     #print("Payload:", udp_layer.payload)
 
     #send icmp packet 
+    #print(type(payload))
+    #z = bytes(payload)
+    #print(type(z))
+    #zz = IP(z)
+    #print(zz.summary())
+    #print(z)
+    #print(bytes(z))
     icmp_builder.envoyer_paquets(payload)
 
 nfqueue = NetfilterQueue()

@@ -67,3 +67,6 @@ socat - UDP4:10.87.87.1:6789,bind=10.87.87.2:6788
 
 h3
 socat - UDP4:10.87.87.1:6789,bind=10.87.87.2:6788
+
+autres options tcp
+tcp-keepidle=10,tcp-keepintvl=5,tcp-keepcnt=3,tcp-timeout=30 -
